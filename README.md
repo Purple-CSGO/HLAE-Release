@@ -3,7 +3,7 @@ This repo stores hlae_xxxxx.zip files when hlae has a new release, which could p
 > 该仓库存放hlae的压缩包，用于部分地区的加速下载
 
 # Try this
-https://cdn.jsdelivr.net/gh/Purple-CSGO/HLAE-Release@v2_102_0/hlae_2_102_0.zip
+https://cdn.jsdelivr.net/gh/Purple-CSGO/HLAE-Release@v2.102.0/hlae_2_102_0.zip
 > 试试这个，是不是秒速下载？
 
 # 项目维护事项
