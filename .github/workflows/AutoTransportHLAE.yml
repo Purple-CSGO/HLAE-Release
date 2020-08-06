@@ -1,0 +1,23 @@
+name: Auto Transport HLAE Latest Assets and Create Release
+
+on:
+  release: 
+    - cron:  '*/1 * * * *'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+    
+    - name: Watch Tag
+    - uses: actions-hub/watch-tag@master
+      with:
+         provider: github
+         repository: advancedfx/advancedfx
+         env_name:	LATEST_HLAE_TAG
+    - run: |
+       echo $LATEST_HLAE_TAG
+       echo Still Testing
+    #if: contains(searchString, $WT_LATEST)
