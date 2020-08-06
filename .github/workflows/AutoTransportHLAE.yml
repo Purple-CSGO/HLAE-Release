@@ -1,7 +1,7 @@
 name: Auto Transport HLAE Latest Assets and Create Release
 
 on:
-  release: 
+  schedule:
     - cron:  '*/1 * * * *'
 
 jobs:
