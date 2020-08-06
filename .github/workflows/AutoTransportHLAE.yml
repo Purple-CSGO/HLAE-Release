@@ -34,10 +34,10 @@ jobs:
        repo: advancedfx
        tag: latest
        file: /[A-z0-9]+.(zip|exe)$/
-    - if: $THIS_TAG == $LATEST_HLAE_TAG
+    - if: env.THIS_TAG == env.LATEST_HLAE_TAG
       name: Push changes
       uses: actions-go/push@v1
-    - if: $THIS_TAG == $LATEST_HLAE_TAG
+    - if: env.THIS_TAG == env.LATEST_HLAE_TAG
       name: Create a Release
       uses: actions/create-release@v1
       with:
