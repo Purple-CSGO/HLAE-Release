@@ -26,4 +26,21 @@ jobs:
       run: |
          echo $LATEST_HLAE_TAG
          echo $THIS_TAG
-    #if: contains(searchString, $WT_LATEST)
+    - if: $THIS_TAG != $LATEST_HLAE_TAG
+      name: Download Release Asset
+      uses: i3h/download-release-asset@v1
+      with:
+       owner: advancedfx
+       repo: advancedfx
+       tag: latest
+       file: /[A-z0-9]+.(zip|exe)$/
+    - if: $THIS_TAG != $LATEST_HLAE_TAG
+      name: Push changes
+      uses: actions-go/push@v1
+    - if: $THIS_TAG != $LATEST_HLAE_TAG
+      name: Create a Release
+      uses: actions/create-release@v1
+      with:
+       tag_name: v$LATEST_HLAE_TAG
+       release_name: v$LATEST_HLAE_TAG
+       body: This release is automatically made by GitHub Actions
