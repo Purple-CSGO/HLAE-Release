@@ -1,50 +1,51 @@
-name: Auto Transport HLAE Latest Assets and Create Release
+# 名称，显示在Actions列表里的
+name: Auto-transport HLAE
 
+# 触发条件
 on:
+  # 定时 每5分钟触发一次（实际7~8分钟触发一次）
   schedule:
     - cron:  '*/5 * * * *'
 
+# 任务/工作
 jobs:
-  transport:
+  # Json解析
+  parseJson:
+    
+    # 运行在ubuntu(linux)最新版
     runs-on: ubuntu-latest
+    
+    # 输出附件assets矩阵给dealWithAssets任务分别处理
+    outputs:
+      assets: ${{ steps.latest-hlae.outputs.assets }}
+      latest: ${{ steps.isLatest.outputs.latest }}
+
+    # 步骤
     steps:
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    
+    # 1.切换到仓库的目录/工作区
     - uses: actions/checkout@v2
-    - name: Get Latest HLAE Tag
-      uses: actions-hub/watch-tag@master
+    
+    # 2.利用API GET仓库最新发布信息的Json
+    - id: request
+      uses: octokit/request-action@v2.x
       with:
-         provider: github
-         repository: advancedfx/advancedfx
-         env_name:	LATEST_HLAE_TAG
-    - name: Get Latest HLAE-Release Tag
-      uses: actions-hub/watch-tag@master
-      with:
-         provider: github
-         repository: Purple-CSGO/HLAE-Release
-         env_name:	THIS_TAG
-    - name: Test Latest HLAE Tag
-      run: |
-         echo $LATEST_HLAE_TAG
-         echo $THIS_TAG
-    - if: env.THIS_TAG != env.LATEST_HLAE_TAG
-      name: Download Release Asset
-      uses: i3h/download-release-asset@v1
-      with:
-       owner: advancedfx
-       repo: advancedfx
-       tag: latest
-       file: /[A-z0-9]+.zip$/
-    - if: env.THIS_TAG != env.LATEST_HLAE_TAG
-      name: Push changes
-      uses: actions-go/push@v1
-    - if: env.THIS_TAG != env.LATEST_HLAE_TAG
-      name: Create a Release
-      uses: actions/create-release@v1
+         route: GET /repos/:owner/:repo/releases/latest
+         owner: advancedfx
+         repo: advancedfx
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    
+    # 3.处理结果
+    - id: result
+      uses: gr2m/get-json-paths-action@v1.x
       with:
-       tag_name: v$LATEST_HLAE_TAG
-       release_name: v$LATEST_HLAE_TAG
-       body: This release is automatically made by GitHub Actions
-       draft: false
-       prerelease: false
+          json: ${{ steps.request.outputs.data }}
+          name: "name"
+          tag_name: "tag_name"
+          assets: "assets"
+    # 4.打印发布信息标题和版本号
+    - run: |
+          echo "latest release name: ${{ steps.result.outputs.name }}"
+          echo "tag_name | Version: (${{ steps.result.outputs.tag_name }})"
+          echo "${{ steps.result.outputs.assets }}"
